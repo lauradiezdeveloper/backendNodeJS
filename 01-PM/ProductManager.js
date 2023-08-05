@@ -28,42 +28,8 @@ class ProductManager {
     getProductbyId(id) {
         const product = this.products.find(p => p.id === id);
         product 
-        ? console.log("El producto encontrado es:", product) 
-        : console.log("Producto no encontrado");
+        ? console.log("Product found:", product) 
+        : console.log("Product not found");
     }
 
 };
-
-
-
-// Test
-
-const product = new ProductManager();
-product.addProduct(
-    "Product test 1",
-    "Test description",
-    200,
-    "No image",
-    "12345",
-    25
-);
-product.addProduct(
-    "Product test 1",
-    "Test description",
-    200,
-    "Sin imagen",
-    "12346",
-    25
-);
-product.addProduct(
-    "Product test 1",
-    "Test description",
-    200,
-    "No image",
-    "12347",
-    25
-);
-
-product.getProducts();
-product.getProducts();
-product.getProductbyId(1);
