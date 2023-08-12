@@ -1,7 +1,8 @@
 import {promises as fs} from "fs";
+import Product from "./Product";
 const path = "./products.json";
 
-class ProductManager {
+export default class ProductManager {
     constructor() {
         this.products = []
     };
@@ -63,39 +64,3 @@ class ProductManager {
         };
     };
 };
-
-
-
-class Product {
-    constructor (title, description, price, thumbnail, code, stock) {
-        this.title = title,
-        this.description= description,
-        this.price= price,
-        this.thumbnail= thumbnail,
-        this.code= code,
-        this.stock= stock,
-        this.id = Product.increaseId()
-    };
-
-    // id autoincremental añadido por la clase Product
-    static increaseId() {
-        if(this.idIncrement) {
-            this.idIncrement++
-        }else{
-            this.idIncrement = 1
-        }
-        return this.idIncrement
-    };
-};
-
-
-
-const prod1 = new Product("Volvo", "Azul", 30000, [], "VA", 2);
-const prod2 = new Product("Peugeot", "Rojo", 20000, [], "PR", 3);
-// const prod3 = new Product("Audi", "Blanco", 50000, [], "AB", 7);
-
-const productManager = new ProductManager();
-
-productManager.addProduct(prod1);
-// productManager.addProduct(prod2);
-productManager.deleteProduct(2);

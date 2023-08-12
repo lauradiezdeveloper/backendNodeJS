@@ -1,1 +1,46 @@
-[{"title":"Volvo","description":"Azul","price":30000,"thumbnail":[],"code":"VA","stock":2,"id":1}]
+[{
+    "title":"Lapiz",
+    "description":"Azul",
+    "price":1.5,
+    "thumbnail":[],
+    "code":"LAPA",
+    "stock":2000,
+    "id":1
+},
+{
+    "title":"Boligrafo",
+    "description":"Rojo",
+    "price":2,
+    "thumbnail":[],
+    "code":"BOLR",
+    "stock":1000,
+    "id":2
+},
+{
+    "title":"Goma",
+    "description":"Rosa",
+    "price":1,
+    "thumbnail":[],
+    "code":"GOMR",
+    "stock":500,
+    "id":3
+},
+{
+    "title":"Tippex",
+    "description":"Blanco",
+    "price":3,
+    "thumbnail":[],
+    "code":"TIPB",
+    "stock":300,
+    "id":4
+},
+{
+    "title":"Regla",
+    "description":"Verde",
+    "price":2.5,
+    "thumbnail":[],
+    "code":"REGV",
+    "stock":700,
+    "id":5
+}
+]
