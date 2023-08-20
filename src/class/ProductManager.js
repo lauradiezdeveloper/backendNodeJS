@@ -1,6 +1,6 @@
 import {promises as fs} from "fs";
 import Product from "./Product";
-const path = "./products.json";
+const path = "../models/products.json";
 
 export default class ProductManager {
     constructor() {

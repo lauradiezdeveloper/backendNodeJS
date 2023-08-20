@@ -1,33 +1,15 @@
-import {promises as fs} from "fs";
 import express from "express";
-import ProductManager from "./class/ProductManager";
-
-const path = "./products.json";
-
-const productManager = new ProductManager();
-
-// productManager.addProduct(prod1);
-// productManager.deleteProduct(2);
+import path from "path";
+import { __dirname } from "./path";
+import productsRouter from "./routes/products.routes";
 
 
-const PORT = 4000;
-
+const PORT = 8080;
 const server = express();
 
-server.get('/products', (req, res) => {
-    const { limit } = req.query
-    if(limit){
-        const productsLimited = path.slice(0, limit)
-        res.send(fs.readFile(path, "utf-8"))
-    }
-});
+server.use('/api/products', productsRouter);
+server.use('/static', express.static(path.join(__dirname, '/public')));
 
-
-server.get('/products/:id', (req, res) => {
-    const prodId = products.find(prodID => prodID.id === parseInt(req.params.id))
-    if(prodId){
-        res.send(prodId)
-    }else{
-        res.send("Product doesnt exist")
-    };
+server.listen(PORT, () => {
+    console.log(`Server on port ${PORT}`)
 });
