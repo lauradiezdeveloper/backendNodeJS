@@ -12,6 +12,12 @@ const productMananger = new ProductManager()
 const PORT = 8080;
 const server = express();
 
+
+mongoose.connect('mongodb+srv://lauradiezdeveloper:<password>@cluster0.qxgudpc.mongodb.net/?retryWrites=true&w=majority')
+	.then(() => console.log("DB is connected"))
+	.cath(() => console.log("Error in conexion"))
+
+
 let productList = [];
 const chargeProducts = async () =>  {
     productList = await productMananger.getProducts()

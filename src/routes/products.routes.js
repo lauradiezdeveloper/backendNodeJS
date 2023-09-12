@@ -1,69 +1,73 @@
-import { Router } from "express";
-import ProductManager from "../class/ProductManager.js";
+import { Router} from 'express';
+import { productModel } from '../models/products.models';
 
-const productsRouter = Router()
-const productManager = new ProductManager();
+const productsRouter = Router();
 
-
-// Ruta para traer todos los productos del límite establecido, sino traer todos los productos
-productsRouter.get('/products', async (req, res) => {
-    let allProducts = await productManager.getProducts();
-    const limit = Number(req.query.limit);
-    if(limit){
-        const productsLimited = allProducts.slice(0, limit)
-        res.status(200).send(productsLimited) 
-    }else{
-        res.status(200).send("Product request over limit", allProducts)
+productsRouter.get('/', async (req, res) => {
+    const { limit } = req.query;
+    try{
+        const allProducts = await productModel.find().limit(limit);
+        res.status(200).send({response: 'OK', message: allProducts}) 
+    }catch(error){
+        res.status(400).send({response: 'Error', message: "Product request over limit"})
     }
 });
 
 
-// Ruta para añadir nuevos productos
-productsRouter.post('/products', async (req, res) => {
+productsRouter.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    try{
+        const productById = await productModel.findById(id);
+        if(productById){
+            res.status(200).send({response: 'OK', message: productById}) 
+        }else{
+            res.status(400).send({response: 'Error', message: "Product doesnt exist"})}
+    }catch{
+        res.status(400).send({response: 'Error', message: "Product query error"})
+    };
+});
+
+
+productsRouter.post('/', async (req, res) => {
+    const { limit } = req.query;
     const { title, description, code, price, stock, category } = req.body;
-    const newProduct = await productManager.addProducts(req.body);
-    if (newProduct) {
-        res.status(200).send("Created product")
-    } else {
-        res.status(400).send("Product cannot be created because it already exist")
+    try{
+        const productCreation = await productModel.create({title, description, code, price, stock, category});
+        res.status(200).send({response: 'OK', message: productCreation}) 
+    }catch(error){
+        res.status(400).send({response: 'Error', message: "Product cannot be created because it already exist"})
+    }
+});
+
+
+productsRouter.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, description, code, price, stock, category } = req.body;
+    try{
+        const productUpdate = await productModel.findByIdAndUpdate(id, [title, description, code, price, stock, category]);
+        if(productUpdate){
+            res.status(200).send({response: 'OK', message: "Updated product"}) 
+        }else{
+            res.status(400).send({response: 'Error', message: "Product cannot be updated because it does not exist"})}
+    }catch{
+        res.status(400).send({response: 'Error', message: "Product query error"})
     };
 });
 
 
-// Ruta para traer todos los productos dado un id
-productsRouter.get('/products/:pid', async (req, res) => {
-    const id = Number(req.params.id)
-    let product = await productManager.getProductById(parseInt(id))
-    if(product){
-        res.status(200).send(prodId)
-    }else{
-        res.status(400).send("Product doesnt exist")
+productsRouter.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+        try{
+        const productDelete = await productModel.findByIdAndDelete(id);
+        if(productDelete){
+            res.status(200).send({response: 'OK', message: "Removed product"}) 
+        }else{
+            res.status(400).send({response: 'Error', message: "Product cannot be deleted because it does not exist"})}
+    }catch{
+        res.status(400).send({response: 'Error', message: "Product query error"})
     };
 });
 
-
-// Ruta para actualizar productos
-productsRouter.put ('/products/:pid', async (req, res) => {
-    const id = Number(req.params.id)
-    let product = await productManager.updateProduct(parseInt(id))
-    if(product){
-        res.status(200).send("Updated product")
-    } else {
-        res.status(400).send("Product cannot be updated because it does not exist")
-    };
-});
-
-
-// Ruta para eliminar productos
-productsRouter.delete ('/products/:pid', async (req, res) => {
-    const id = Number(req.params.id)
-    let product = await productManager.deleteProduct(parseInt(id))
-    if(product){
-        res.status(200).send("Removed product")
-    } else {
-        res.status(400).send("Product cannot be deleted because it does not exist")
-    };
-});
 
 
 export default productsRouter;
