@@ -1,5 +1,5 @@
 import {promises as fs} from "fs";
-import Product from "./Product";
+import Product from "./Product.js";
 const path = "../models/products.json";
 
 export default class ProductManager {

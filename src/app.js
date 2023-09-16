@@ -1,22 +1,28 @@
+import 'dotenv/config';
 import express from "express";
-import path from "path";
+import mongoose from "mongoose";
+import path from "path"
 import { engine } from "express-handlebars";
-import { __dirname } from "./path";
+import { __dirname } from "./path.js";
 import { Server } from "socket.io";
-import productsRouter from "./routes/products.routes";
-import ProductManager from "./class/ProductManager";
+import productsRouter from "./routes/products.routes.js";
+import ProductManager from "./class/ProductManager.js";
+import { productModel } from "./models/products.models.js";
 
-const path = "../models/products.json";
+
 const productMananger = new ProductManager()
 
 const PORT = 8080;
 const server = express();
 
 
-mongoose.connect('mongodb+srv://lauradiezdeveloper:<password>@cluster0.qxgudpc.mongodb.net/?retryWrites=true&w=majority')
-	.then(() => console.log("DB is connected"))
-	.cath(() => console.log("Error in conexion"))
-
+mongoose.connect(process.env.MONGO_URL) 
+	.then((async () => {
+        console.log("DB is connected")
+        const paginationResult = await productModel.paginate({category: category}, { limit: 10, page: 1, sort: {title: 'asc'} })
+        console.log(paginationResult)
+    }))
+	.catch(() => console.log("Error in conexion"))
 
 let productList = [];
 const chargeProducts = async () =>  {
