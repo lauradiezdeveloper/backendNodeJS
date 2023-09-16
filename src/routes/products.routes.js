@@ -1,13 +1,25 @@
 import { Router} from 'express';
-import { productModel } from '../models/products.models';
+import { productModel } from '../models/products.models.js';
 
 const productsRouter = Router();
 
 productsRouter.get('/', async (req, res) => {
-    const { limit } = req.query;
+    const { limit, page, category, sort } = req.query;
     try{
-        const allProducts = await productModel.find().limit(limit);
-        res.status(200).send({response: 'OK', message: allProducts}) 
+        const result = await productModel.findAll(limit, page, category, sort);
+        const responseQuery = {
+            status: "success",
+            payload: result.docs, 
+            totalPages: result.totalPages,
+            prevPage: result.prevPage,
+            nextPage: result.nextPage,
+            page: result.page,
+            hasPrevPage: result.hasPrevPage,
+            hasNextPage: result.hasNextPage,
+            prevLink: result.hasPrevPage ? `http://${req.headers.host}${req.baseUrl}?limit=${limit}&page=${result.prevPage}&category=${category}&sort=${sort}` : null,
+            nextLink: result.hasNextPage ? `http://${req.headers.host}${req.baseUrl}?limit=${limit}&page=${result.nextPage}&category=${category}&sort=${sort}` : null
+        };
+        res.status(200).send({response: 'OK', message: responseQuery}) 
     }catch(error){
         res.status(400).send({response: 'Error', message: "Product request over limit"})
     }
