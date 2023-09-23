@@ -8,6 +8,12 @@ import { Server } from "socket.io";
 import productsRouter from "./routes/products.routes.js";
 import ProductManager from "./class/ProductManager.js";
 import { productModel } from "./models/products.models.js";
+import dotenv from 'dotenv';
+import exphbs from 'express-handlebars';
+import Handlebars from 'handlebars';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 
 const productMananger = new ProductManager()
@@ -38,10 +44,39 @@ const serverSocket = server.listen(PORT, () => {
 //Middleware
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
+app.use(cookieParser(process.env.SIGNED_COOKIE))
+app.use(session({
+    store: MongoStore.create({ 
+        mongoUrl: process.env.MONGO_URL,
+        mongoOptions: { 
+            useNewUrlParser: true, 
+            useUnifiedTopology: true 
+        }, 
+        ttl: 120
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true
+})) 
+
+const hbs = exphbs.create({
+    defaultLayout: 'main',
+    handlebars: Handlebars, 
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true,
+    }
+});
 
 server.engine('handlebars', engine())
 server.set('view engine', 'handlebars')
 server.set('views', path.resolve(__dirname, './views'))
+server.use('/home', express.static(path.join(__dirname, '/public'))) 
+server.use('/realtimeproducts', express.static(path.join(__dirname, '/public')))
+server.use('/login', express.static(path.join(__dirname, '/public')))
+server.use('/logout', express.static(path.join(__dirname, '/public')))
+server.use('/signup', express.static(path.join(__dirname, '/public')))
+server.use('/chat', express.static(path.join(__dirname, '/public')))
 
 
 // Server Socket.io
