@@ -1,6 +1,6 @@
 import {promises as fs} from "fs";
 
-const path = "../models/cart.json";
+const path = "./src/models/cart.json";
 
 export default class CartManager {
     constructor() {
