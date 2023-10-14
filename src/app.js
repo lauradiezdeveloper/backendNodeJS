@@ -22,6 +22,8 @@ server.get('/', (req, res) => {
 mongoose.connect(process.env.MONGO_URL) 
 	.then((async () => {
         console.log("DB is connected")
+        const resultado = await productModel.paginate()
+				console.log(resultado)
     }))
 	.catch((error) => console.log(error))
 
