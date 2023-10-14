@@ -6,7 +6,7 @@ const productsRouter = Router();
 productsRouter.get('/', async (req, res) => {
     const { limit, page, category, sort } = req.query;
     try{
-        const result = await productModel.findAll(limit, page, category, sort);
+        const result = await productModel.paginate();
         const responseQuery = {
             status: "success",
             payload: result.docs, 
@@ -21,7 +21,7 @@ productsRouter.get('/', async (req, res) => {
         };
         res.status(200).send({response: 'OK', message: responseQuery}) 
     }catch(error){
-        res.status(400).send({response: 'Error', message: "Product request over limit"})
+        res.status(400).send({response: "Error", message: "Product request over limit"})
     }
 });
 
@@ -48,6 +48,7 @@ productsRouter.post('/', async (req, res) => {
         res.status(200).send({response: 'OK', message: productCreation}) 
     }catch(error){
         res.status(400).send({response: 'Error', message: "Product cannot be created because it already exist"})
+        console.log(error)
     }
 });
 
