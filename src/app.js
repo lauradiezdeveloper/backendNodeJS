@@ -8,6 +8,7 @@ import { Server } from "socket.io";
 import productsRouter from "./routes/products.routes.js";
 import userRouter from './routes/users.routes.js';
 import cartRouter from "./routes/cart.routes.js";
+import sessionsRouter from './routes/sessions.routes.js';
 // import ProductManager from './class/ProductManager.js';
 import { productModel } from "./models/products.models.js";
 import cookieParser from 'cookie-parser';
@@ -35,14 +36,7 @@ mongoose.connect(process.env.MONGO_URL)
 	.catch((error) => console.log(error))
 
 
-//Verificar autenticación usuario
-const auth = (req, res, next) => {
-    if(req.session.email == "admin@admin.com" && req.session.password == "admin") {
-        return next()
-    }else {
-        res.send("No estas autorizado")
-    }
-}
+
 
 
 /* let productList = [];
@@ -71,28 +65,23 @@ server.use(session({
     ttl: 60
     }),
     secret: process.env.SESSIOM_SECRET,
-    resave: true,
-    saveUninitialized: true
+    resave: false,
+    saveUninitialized: false
 }))
 
-server.engine('handlebars', engine())
+// Vistas
+server.engine('handlebars', engine({ extname: '.handlebars' }))
 server.set('view engine', 'handlebars')
 server.set('views', path.resolve(__dirname, './views'))
-
-
-server.get('/login', (req, res) => {
-	const {email, password} = req.body
-
-    req.session.email = email,
-    req.session.password = password,
-
-    res.send('Usuario logeado')
+server.get('/register', (req, res) => {
+    res.render('register'); 
 });
-
-server.get('/admin', auth, (req, res) => {
-	res.send('Eres admin')
-})
-
+server.get('/login', (req, res) => {
+    res.render('login'); 
+});
+server.get('/products', (req, res) => {
+    res.render('products'); 
+});
 
 console.log("lee hasta socket.io")
 // Server Socket.io
@@ -110,6 +99,7 @@ console.log("lee hasta rutas 2")
 server.use('/api/products', productsRouter);
 server.use('/api/users', userRouter);
 server.use('/api/cart', cartRouter);
+server.use('/api/sessions', sessionsRouter);
 
 server.use('/static', express.static(path.join(__dirname, '/public')), (req, res) => {
     res.render('realTimeProducts', {
