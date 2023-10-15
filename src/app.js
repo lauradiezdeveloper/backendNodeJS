@@ -6,8 +6,13 @@ import { engine } from "express-handlebars";
 import { __dirname } from "./path.js";
 import { Server } from "socket.io";
 import productsRouter from "./routes/products.routes.js";
-import ProductManager from './class/ProductManager.js';
+import userRouter from './routes/users.routes.js';
+import cartRouter from "./routes/cart.routes.js";
+// import ProductManager from './class/ProductManager.js';
 import { productModel } from "./models/products.models.js";
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 
 // const productMananger = new ProductManager()
@@ -19,6 +24,8 @@ server.get('/', (req, res) => {
     res.send('¡Bienvenido a la página de inicio de la aplicación!');
 });
 
+
+// Conexión base de datos
 mongoose.connect(process.env.MONGO_URL) 
 	.then((async () => {
         console.log("DB is connected")
@@ -26,6 +33,17 @@ mongoose.connect(process.env.MONGO_URL)
 				console.log(resultado)
     }))
 	.catch((error) => console.log(error))
+
+
+//Verificar autenticación usuario
+const auth = (req, res, next) => {
+    if(req.session.email == "admin@admin.com" && req.session.password == "admin") {
+        return next()
+    }else {
+        res.send("No estas autorizado")
+    }
+}
+
 
 /* let productList = [];
 const chargeProducts = async () =>  {
@@ -42,10 +60,38 @@ const serverSocket = server.listen(PORT, () => {
 console.log("lee hasta middleware")
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
+server.use(cookieParser(process.env.SIGNED_COOKIE))
+server.use(session({
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URL,
+        mongoOptions: { 
+            useNewUrlParser: true, 
+            useUnifiedTopology: true 
+        },
+    ttl: 60
+    }),
+    secret: process.env.SESSIOM_SECRET,
+    resave: true,
+    saveUninitialized: true
+}))
 
 server.engine('handlebars', engine())
 server.set('view engine', 'handlebars')
 server.set('views', path.resolve(__dirname, './views'))
+
+
+server.get('/login', (req, res) => {
+	const {email, password} = req.body
+
+    req.session.email = email,
+    req.session.password = password,
+
+    res.send('Usuario logeado')
+});
+
+server.get('/admin', auth, (req, res) => {
+	res.send('Eres admin')
+})
 
 
 console.log("lee hasta socket.io")
@@ -62,6 +108,9 @@ io.on("connection", (socket) => {
 console.log("lee hasta rutas 2")
 // Routes
 server.use('/api/products', productsRouter);
+server.use('/api/users', userRouter);
+server.use('/api/cart', cartRouter);
+
 server.use('/static', express.static(path.join(__dirname, '/public')), (req, res) => {
     res.render('realTimeProducts', {
         title: Productos, 
