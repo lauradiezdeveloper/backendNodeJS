@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express from "express";
 import mongoose from "mongoose";
 import path from "path"
+import passport from 'passport';
+import initializaPassport from './config/passport.js';
 import { engine } from "express-handlebars";
 import { __dirname } from "./path.js";
 import { Server } from "socket.io";
@@ -36,9 +38,6 @@ mongoose.connect(process.env.MONGO_URL)
 	.catch((error) => console.log(error))
 
 
-
-
-
 /* let productList = [];
 const chargeProducts = async () =>  {
     productList = await productMananger.getProducts()
@@ -68,6 +67,10 @@ server.use(session({
     resave: false,
     saveUninitialized: false
 }))
+initializaPassport()
+server.use(passport.initialize())
+server.use(passport.session())
+
 
 // Vistas
 server.engine('handlebars', engine({ extname: '.handlebars' }))
@@ -78,9 +81,6 @@ server.get('/register', (req, res) => {
 });
 server.get('/login', (req, res) => {
     res.render('login'); 
-});
-server.get('/products', (req, res) => {
-    res.render('products'); 
 });
 
 console.log("lee hasta socket.io")
@@ -94,7 +94,7 @@ io.on("connection", (socket) => {
     })
 }) 
 
-console.log("lee hasta rutas 2")
+
 // Routes
 server.use('/api/products', productsRouter);
 server.use('/api/users', userRouter);
